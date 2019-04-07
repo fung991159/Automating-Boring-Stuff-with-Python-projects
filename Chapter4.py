@@ -1,4 +1,4 @@
-#Chapter 4 projects test
+#Chapter 4 projects
 
 spam = ['apples', 'bananas', 'tofu', 'cats']
 
