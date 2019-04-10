@@ -1,1 +1,0 @@
-newList[i].rjust(colWidths[i])
