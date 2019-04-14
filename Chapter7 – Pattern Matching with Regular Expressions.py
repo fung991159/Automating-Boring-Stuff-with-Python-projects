@@ -17,13 +17,16 @@ def checkPwdStrength(pwd):
     else:
         print ('invalid password!')
 
-pwd = '1234AbCD'
-checkPwdStrength(pwd)
+# pwd = '1234AbCD'
+# checkPwdStrength(pwd)
 
 # Regex Version of strip()
 def Regex_strip(targetString, replaceText=None):
     if replaceText == '':
         print ('please enter text to match in second parameter')
+    elif '\\' in replaceText:
+        stripRegex = re.compile(r'\\*')
+        return stripRegex.sub('', targetString)
     elif replaceText is None:
         stripRegex = re.compile(r'\s*')
         return stripRegex.sub('', targetString)
@@ -31,5 +34,5 @@ def Regex_strip(targetString, replaceText=None):
         stripRegex = re.compile('['+replaceText+']+')
         return stripRegex.sub('', targetString)
     
-textTostrip = Regex_strip('123415bb671as', '1b')
+textTostrip = Regex_strip('1234\\15bb\\671as', '\')
 print (textTostrip)
