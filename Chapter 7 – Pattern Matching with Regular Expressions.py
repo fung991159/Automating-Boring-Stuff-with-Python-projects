@@ -34,5 +34,5 @@ def Regex_strip(targetString, replaceText=None):
         stripRegex = re.compile('['+replaceText+']+')
         return stripRegex.sub('', targetString)
     
-textTostrip = Regex_strip('1234\\15bb\\671as', '\')
+textTostrip = Regex_strip('1234\\15bb\\671as', '\\')
 print (textTostrip)
