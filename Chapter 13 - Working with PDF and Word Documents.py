@@ -22,7 +22,7 @@ def PDF_paranoia(path):
                     input_pdf = PyPDF2.PdfFileReader(pdf, strict=False)
                     output_pdf = PyPDF2.PdfFileWriter()
                     output_pdf.appendPagesFromReader(input_pdf)
-                    output_pdf.encrypt('abc1234') #encrypt password
+                    output_pdf.encrypt('ZURICH') #encrypt password
                 
                 #write new PDF file
                 with open(os.path.join('encrypted',os.path.splitext(file)[0]+'_encrypted.pdf'),'wb') as pdf_e:
@@ -52,9 +52,29 @@ def custom_Doc_Invitations(path):
             doc.add_paragraph('at Central on the Evening of 11st May 2019 at 7 o’clock', style = 'Style3')
             doc.add_page_break()
         doc.save('test.docx') 
-        
+
+#Brute-Force PDF Password Breaker
+def pdf_password_breaker(path):
+    os.chdir(path)
+    with open('dictionary.txt', 'r') as f:
+        for pwd in f.readlines():
+            currPwd = pwd.strip()
+            with open(r'encrypted\1_encrypted.pdf', 'rb') as pdf_f:
+                input_PDF = PyPDF2.PdfFileReader(pdf_f)
+                
+                if (input_PDF.decrypt(currPwd)) == 1:
+                    print (f'Password found! It is {currPwd}')
+                    break
+                else:
+                    print(f'{currPwd} is not the password! Trying another one:)')
+
+
+
+    
 if __name__ == "__main__":
     path = r'C:\Users\Fung\Downloads\testPDF'
     # PDF_paranoia(path)
-    path = r'C:\Users\Fung\Downloads\testDoc'
+    # path = r'C:\Users\Fung\Downloads\testDoc'
     # custom_Doc_Invitations(path)
+    # path = r'C:\Users\Fung\Downloads\testPDF'
+    pdf_password_breaker(path)
