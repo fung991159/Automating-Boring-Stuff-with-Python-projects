@@ -88,6 +88,64 @@ def auto_Unsubsubscriber():
     for unsubscribeUrl in unsubscribeLinkUrls:
         webbrowser.open(unsubscribeUrl)
 
+def control_Computer_by_mail():
+    #log any error, if any
+    import logging 
+    logging.basicConfig(filename = 'control_Computer_by_mail.txt', level=logging.DEBUG, format=' %(asctime)s - %(levelname)s- %(message)s')
+    try:
+        #check mail from my email address with pwd
+        print('reading E-mails for torrent links')
+        today = datetime.datetime.now().strftime('%d-%b-%Y')
+        imapObj = imapclient.IMAPClient('imap.gmail.com', ssl=True)
+        myEmailAddr = 'abc@gmail.com'        #login acct here
+        myEmailPwd = 'pwd'                   #login pwd here
+        imapObj.login(myEmailAddr, myEmailPwd)    # gmail login and pwd here
+        imapObj.select_folder('INBOX', readonly=False)
+        UIDs = imapObj.search(['ON', today, 'FROM', myEmailAddr])   #get only message from myself
+        emailVerificationPwd = 'ye8sd'
+        #gather content BitTorrent Link and delete mail
+        torrentLinks = []
+        for UID in UIDs:
+            rawMessages = imapObj.fetch(UID, ['BODY[]', 'FLAGS'])
+            import pyzmail, bs4
+            message = pyzmail.PyzMessage.factory(rawMessages[UID][b'BODY[]'])
+            if message.get_subject() != emailVerificationPwd:
+                pass
+            else:
+                if message.html_part != None:  #read mail that have html format available
+                    soupSearch = bs4.BeautifulSoup(message.html_part.get_payload().decode(message.html_part.charset),'html.parser')
+                    torrentLinkElement = soupSearch.select('div')
+                    torrentLinks.append(torrentLinkElement[0].text)
+                    imapObj.delete_messages(UIDs) #delete mail
+        
+        if torrentLinks == []:
+            print('no mail found')
+            pass #do nothing if no E_mail found
+        else:
+            #open link and download file in qtorrent
+            import subprocess
+            print('E-mail(s), opening torrent links in qbTorret')
+            for torrentLink in torrentLinks:
+                qbProcess = subprocess.Popen(['C:\Program Files\qBittorrent\qbittorrent.exe', torrentLink])
+            #when download finish and qbitorrent quit, send email confirm 
+            qbProcess.wait()
+            #E-mail each person their assigned chores
+            print('download completed: sending e-Mail to self')
+            smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
+            smtpObj.ehlo()
+            smtpObj.starttls()
+            smtpObj.login(myEmailAddr, myEmailPwd)    
+            eMailSubject= f'Subject: qbTorrent download completed! \n Download completed!'
+            smtpObj.sendmail(myEmailAddr, myEmailAddr,eMailSubject) 
+            smtpObj.quit()
+    except Exception as err:
+        print('critial error found! logging to text file')
+        with open('control_Computer_by_mail.txt', 'a') as f:
+            f.write(str(err))
+    
+
+
 if __name__ == "__main__":
     # assignment_Emailer()
     # auto_Unsubsubscriber()
+    control_Computer_by_mail()
