@@ -1,2 +1,3 @@
-   # with open(os.path.join(sourceFolder,'new_text.txt'),'w') as newTxt:
-    #     newTxt.write(' '.join(newlineList)
+  except Exception as err:
+        with open('control_Computer_by_mail.txt','a') as f:
+            f.write(logging.error('damn!', exc_info= True))

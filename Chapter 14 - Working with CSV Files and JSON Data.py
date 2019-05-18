@@ -26,7 +26,7 @@ def excel_to_CSV(path):
                             # Append each cell's data to rowData.
                             rowData.append(sheet.cell(rowNum, colNum).value)
                             
-                            # Write the rowData list to the CSV file.
+                        # Write the rowData list to the CSV file.
                         outputWriter.writerow(rowData)
                     
 if __name__ == "__main__":

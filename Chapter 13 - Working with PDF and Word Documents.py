@@ -72,9 +72,9 @@ def pdf_password_breaker(path):
 
     
 if __name__ == "__main__":
-    path = r'C:\Users\Fung\Downloads\testPDF'
+    # path = r'C:\Users\Fung\Downloads\testPDF'
     # PDF_paranoia(path)
     # path = r'C:\Users\Fung\Downloads\testDoc'
     # custom_Doc_Invitations(path)
     # path = r'C:\Users\Fung\Downloads\testPDF'
-    pdf_password_breaker(path)
+    # pdf_password_breaker(path)
