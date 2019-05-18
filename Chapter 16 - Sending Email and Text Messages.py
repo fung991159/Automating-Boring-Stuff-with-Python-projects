@@ -2,7 +2,9 @@
 
 #Random Chore Assignment Emailer
 
-import os, smtplib, datetime, random
+import os, datetime, random
+import smtplib, imapclient, pyzmail
+
 import openpyxl
 def assignment_Emailer():
     #open excel file, get e-mail address and last chore
@@ -42,7 +44,6 @@ def assignment_Emailer():
         for i in range(2,ws.max_row+1):
             emailInfo.append([ws.cell(i,1).value, ws.cell(i,2).value, ws.cell(i,lastCol).value])
         
-
         #Gather email element
         print('reading e-mails info')
         for i in range(len(emailInfo)):
@@ -58,10 +59,35 @@ def assignment_Emailer():
             eMailSubject= f'Subject: {receipant}, your chore today was assigned! !\n This time you get to {assigedChore}'
             print(f'Sending mail to {receipant} {eMailAdd}')
             smtpObj.sendmail('@gmail.com', eMailAdd,eMailSubject) #<<<<Login email address
-
+        smtpObj.quit()
         wb.save('Chapter16_choresTable.xlsx') #only save excel file after everything is done
         print('All notification mail sent!')
-        
+
+# Auto Unsubscriber
+def auto_Unsubsubscriber():
+    targetDate = datetime.datetime.now() - datetime.timedelta(days=10)
+    targetDateStr = targetDate.strftime('%d-%b-%Y')
+    imapObj = imapclient.IMAPClient('imap.gmail.com', ssl=True)
+    imapObj.login('test@gmail.com', 'pwd')    # gmail login and pwd here
+    imapObj.select_folder('INBOX', readonly=True)
+    UIDs = imapObj.search(['SINCE', targetDateStr])
+    unsubscribeLinkUrls = [] #collect all links here
+    for UID in UIDs:
+        rawMessages = imapObj.fetch(UID, ['BODY[]', 'FLAGS'])
+        import pyzmail, bs4
+        message = pyzmail.PyzMessage.factory(rawMessages[UID][b'BODY[]'])
+        if message.html_part != None:  #read mail that have html format available
+            soupSearch = bs4.BeautifulSoup(message.html_part.get_payload().decode(message.html_part.charset),'html.parser')
+            linkList = soupSearch.select('a')
+            for link in linkList:
+                if 'unsubscribe' in link:
+                    unsubscribeLinkUrls.append(link.get('href'))  #get unsubscribe link
+    
+    #open each unsubscribe link in webbrowser
+    import webbrowser
+    for unsubscribeUrl in unsubscribeLinkUrls:
+        webbrowser.open(unsubscribeUrl)
 
 if __name__ == "__main__":
-    assignment_Emailer()
+    # assignment_Emailer()
+    # auto_Unsubsubscriber()
